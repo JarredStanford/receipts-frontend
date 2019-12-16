@@ -27,8 +27,7 @@ const reducer = (state, action) => {
 
 async function createNewReceipt() {
   const receipt = { name: "Whole Foods", description: "Hummus, Large" }
-  await API.graphQL(graphqlOperation(createReceipt, { input: receipt }))
-
+  const newReceipt = await API.graphql(graphqlOperation(createReceipt, { input: receipt }))
 }
 
 export default function App() {
@@ -47,18 +46,20 @@ export default function App() {
     const subscription = API.graphql(graphqlOperation(onCreateReceipt)).subscribe({
       next: (eventData) => {
         const receipt = eventData.value.data.onCreateReceipt
-        dispatch({ type: 'SUBSCRIPTION', receipt })
+        dispatch({ type: 'SUBSCRIPTION', receipt: receipt })
       }
     })
 
     return () => subscription.unsubscribe()
 
-  })
+  }, [])
 
+  if (state.receipts === []) { return <Text>Loading...</Text> }
 
   return (
     <View style={styles.container}>
       <Button onPress={createNewReceipt} title='Create Receipt' />
+      {state.receipts.map((todo, i) => <Text key={todo.id}>{todo.name} : {todo.description}</Text>)}
     </View>
   );
 }

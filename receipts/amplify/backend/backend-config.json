@@ -7,9 +7,10 @@
 				"authConfig": {
 					"additionalAuthenticationProviders": [],
 					"defaultAuthentication": {
-						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
-						"userPoolConfig": {
-							"userPoolId": "authreceipts00b60df8"
+						"authenticationType": "API_KEY",
+						"apiKeyConfig": {
+							"description": "receipts",
+							"apiKeyExpirationDays": 7
 						}
 					}
 				}
