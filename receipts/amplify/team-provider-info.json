@@ -10,11 +10,6 @@
             "StackName": "amplify-receipts-dev-191313",
             "StackId": "arn:aws:cloudformation:us-east-2:033907049767:stack/amplify-receipts-dev-191313/c4be5740-1f98-11ea-88df-0608930970a0",
             "AmplifyAppId": "d1aq4r4ulwfv09"
-        },
-        "categories": {
-            "auth": {
-                "receipts00b60df8": {}
-            }
         }
     }
 }

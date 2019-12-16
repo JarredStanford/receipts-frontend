@@ -1,5 +1,7 @@
 type Receipt @model {
   id: ID!
-  name: String!
-  description: String
+  store: String!
+  items: [String!]
+  prices: [Float!]
+  quantity: [Int!]
 }

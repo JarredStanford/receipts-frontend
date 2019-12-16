@@ -2,7 +2,6 @@ import React, { useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import PubSub from '@aws-amplify/pubsub';
-import { createReceipt, deleteReceipt } from './src/graphql/mutations';
 
 //import and configure access to Amplify
 import config from './aws-exports'
@@ -10,8 +9,8 @@ API.configure(config) //Configure Amplify
 PubSub.configure(config)
 
 //other imports
-import { onCreateReceipt } from './src/graphql/subscriptions'
 import { listReceipts } from './src/graphql/queries'
+import { createReceipt, deleteReceipt } from './src/graphql/mutations';
 
 const initialState = { receipts: [], currentReceipt: null }
 const reducer = (state, action) => {
@@ -20,8 +19,6 @@ const reducer = (state, action) => {
       return { ...state, receipts: action.receipts }
     case 'SELECT':
       return { ...state, currentReceipt: action.receipt }
-    case 'SUBSCRIPTION':
-      return { ...state, receipts: [...state.receipts, action.receipt] }
     case 'CREATE_RECEIPT':
       return { ...state, receipts: [...state.receipts, action.payload] }
     case 'DELETE_RECEIPT':
@@ -55,7 +52,6 @@ export default function App() {
     console.log(oldReceipt)
     dispatch({ type: 'DELETE_RECEIPT', payload: oldReceipt.data.deleteReceipt })
   }
-
 
   const selectReceipt = receipt => {
     console.log(receipt)
