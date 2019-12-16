@@ -1,0 +1,5 @@
+type Receipt @model {
+  id: ID!
+  name: String!
+  description: String
+}

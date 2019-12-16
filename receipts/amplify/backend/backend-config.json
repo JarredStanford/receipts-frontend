@@ -1,1 +1,27 @@
-{}
+{
+	"api": {
+		"receipts": {
+			"service": "AppSync",
+			"providerPlugin": "awscloudformation",
+			"output": {
+				"authConfig": {
+					"additionalAuthenticationProviders": [],
+					"defaultAuthentication": {
+						"authenticationType": "AMAZON_COGNITO_USER_POOLS",
+						"userPoolConfig": {
+							"userPoolId": "authreceipts00b60df8"
+						}
+					}
+				}
+			}
+		}
+	},
+	"hosting": {},
+	"auth": {
+		"receipts00b60df8": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	}
+}
