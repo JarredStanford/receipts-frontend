@@ -2,32 +2,33 @@ import React, { useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import PubSub from '@aws-amplify/pubsub';
-import { createReceipt } from './src/graphql/mutations';
+import { createReceipt, deleteReceipt } from './src/graphql/mutations';
 
 //import and configure access to Amplify
 import config from './aws-exports'
-API.configure(config) //Cofnigure Amplify
+API.configure(config) //Configure Amplify
 PubSub.configure(config)
 
 //other imports
 import { onCreateReceipt } from './src/graphql/subscriptions'
 import { listReceipts } from './src/graphql/queries'
 
-const initialState = { receipts: [] }
+const initialState = { receipts: [], currentReceipt: null }
 const reducer = (state, action) => {
   switch (action.type) {
     case 'QUERY':
       return { ...state, receipts: action.receipts }
+    case 'SELECT':
+      return { ...state, currentReceipt: action.receipt }
     case 'SUBSCRIPTION':
       return { ...state, receipts: [...state.receipts, action.receipt] }
+    case 'CREATE_RECEIPT':
+      return { ...state, receipts: [...state.receipts, action.payload] }
+    case 'DELETE_RECEIPT':
+      return { ...state, receipts: state.receipts.filter(receipt => receipt.id !== action.payload.id) }
     default:
       return state
   }
-}
-
-async function createNewReceipt() {
-  const receipt = { name: "Whole Foods", description: "Hummus, Large" }
-  const newReceipt = await API.graphql(graphqlOperation(createReceipt, { input: receipt }))
 }
 
 export default function App() {
@@ -42,24 +43,32 @@ export default function App() {
     dispatch({ type: 'QUERY', receipts: receiptData.data.listReceipts.items })
   }
 
-  useEffect(() => {
-    const subscription = API.graphql(graphqlOperation(onCreateReceipt)).subscribe({
-      next: (eventData) => {
-        const receipt = eventData.value.data.onCreateReceipt
-        dispatch({ type: 'SUBSCRIPTION', receipt: receipt })
-      }
-    })
+  const createNewReceipt = async () => {
+    const receipt = { name: "Whole Foods", description: "Hummus, Large" }
+    const newReceipt = await API.graphql(graphqlOperation(createReceipt, { input: receipt }))
+    dispatch({ type: 'CREATE_RECEIPT', payload: newReceipt.data.createReceipt })
+  }
 
-    return () => subscription.unsubscribe()
+  const deleteOldReceipt = async () => {
+    const receipt = { id: state.currentReceipt }
+    const oldReceipt = await API.graphql(graphqlOperation(deleteReceipt, { input: receipt }))
+    console.log(oldReceipt)
+    dispatch({ type: 'DELETE_RECEIPT', payload: oldReceipt.data.deleteReceipt })
+  }
 
-  }, [])
+
+  const selectReceipt = receipt => {
+    console.log(receipt)
+    dispatch({ type: 'SELECT', receipt })
+  }
 
   if (state.receipts === []) { return <Text>Loading...</Text> }
 
   return (
     <View style={styles.container}>
       <Button onPress={createNewReceipt} title='Create Receipt' />
-      {state.receipts.map((todo, i) => <Text key={todo.id}>{todo.name} : {todo.description}</Text>)}
+      {state.receipts.map((receipt, i) => <Text key={receipt.id} onPress={() => selectReceipt(receipt.id)}>{receipt.name} : {receipt.description}</Text>)}
+      <Button onPress={deleteOldReceipt} title='Delete Receipt' />
     </View>
   );
 }
