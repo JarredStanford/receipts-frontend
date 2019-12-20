@@ -1,7 +1,0 @@
-type Receipt @model {
-  id: ID!
-  store: String!
-  items: [String!]
-  prices: [Float!]
-  quantity: [Int!]
-}
