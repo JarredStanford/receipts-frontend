@@ -1,7 +1,5 @@
 import React, { useEffect, useReducer } from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
-import API, { graphqlOperation } from '@aws-amplify/api'
-import PubSub from '@aws-amplify/pubsub';
 
 //import and configure access to Amplify
 import config from './aws-exports'
